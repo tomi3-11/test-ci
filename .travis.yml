@@ -1,4 +1,21 @@
-   language: ruby
-   rvm:
-    - 2.2
-    - jruby
+language: python
+
+python:
+  - "3.11"
+
+cache: pip
+
+install:
+  - python -m pip install --upgrade pip
+  - if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
+  - if [ -f requirements-dev.txt ]; then python -m pip install -r requirements-dev.txt; fi
+  - python -m pip install pytest
+
+script:
+  - |
+    if find . -type f \( -name 'test_*.py' -o -name '*_test.py' \) -not -path './.git/*' | grep -q .; then
+      python -m pytest -q
+    else
+      echo "No pytest test files found; checking Python syntax instead."
+      python -m compileall -q .
+    fi
